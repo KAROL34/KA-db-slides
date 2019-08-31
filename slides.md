@@ -3,10 +3,9 @@
 ![Relacyjne bazy danych](images/database.jpg)
 
 ---
-
 ##### Czym są relacyjne bazy danych?
 
-Relacyjne bazy danych służą do przechowywania danych połączonych ze sobą relacjami. Charakterystyczne cechy baz danych to:
+Relacyjne bazy danych służą do przechowywania danych połączonych ze sobą relacjami. <br/> Charakterystyczne cechy baz danych to:
 
 * Szybkie wyszukiwanie informacji
 * Przechowywanie dużej ilości danych na małej powierzchni
@@ -87,14 +86,14 @@ Zapytania **SQL** mogą także wykonywać operacje wstawiania danych, usuwania d
 
 ###### Podstawowe instrukcje to:
 
-* **SHOW DATABASES;** - wyświetla bazy danych na serwerze
-* **USE [nazwa bazy danych];** - wybiera bazę danych
-* **SHOW TABLES;** - wyświetla tabele w wybranej bazie danych.
-* **DESC [bazwa tabeli];** - wyświetla detale tabeli
+* `SHOW DATABASES;` - wyświetla bazy danych na serwerze
+* `USE [nazwa bazy danych];` - wybiera bazę danych
+* `SHOW TABLES;` - wyświetla tabele w wybranej bazie danych.
+* `DESC [bazwa tabeli];` - wyświetla detale tabeli
 
 ---
 
-Do bazy danych możemy łaczyć się przez narzędzia takie jak `Mysql Workbench`,
+Do bazy danych możemy łaczyć się przez narzędzia takie jak `MySQL Workbench`,
 `IntelliJ` lub przez linię poleceń korzystając z narzędzia `mysql`.
 
 Możemy się połączyć z bazą danych przy pomocy `mysql` używając polecenia:
@@ -327,6 +326,18 @@ SELECT DATE_FORMAT('2017-06-15', '%W %M %e %Y'); -- Thursday June 15 2017
 SELECT DATE_FORMAT(birthdate, '%d.%m.%Y') FROM employees; -- 18.12.1988
 ```
 
+Przykładowe znaczniki:
+
+| Znacznik  | Co oznacza?                    | Przykład       |
+|-----------|--------------------------------|----------------|
+| **%Y**    | Rok w formacie czterocyfrowym  | 1988           |
+| **%M**    | Pełna nazwa miesiąca           | September      |
+| **%m**    | Numer miesiąca (01 - 12)       | 04             |
+| **%d**    | Dzień miesiąca                 | 12             |
+| **%H**    | Godzina (0 - 23)               | 12             |
+| **%i**    | Minuta (0 - 59)                | 43             |
+| **%s**    | Sekunda (0 - 59)               | 23             |
+
 ---
 
 Podstawowe funkcje związane z liczbami
@@ -407,6 +418,9 @@ FROM [tabela]
 GROUP BY [kolumna_grupująca1, kolumna_grupująca2, ...]
 ```
 
+Wszystkie kolumny, które nie są użyte w fukcjach agregujących muszą być podane
+w wyrażeniu `GROUP BY`:
+
 ```sql
 SELECT year, AVG(value) AS avg_income 
 FROM incomes 
@@ -439,23 +453,23 @@ Możemy używać ich w predykatach:
 ```sql
 SELECT surname, salary
 FROM employee
--- podzapytanie musi wzrócić jeden wynik w jednej kolumnu
 WHERE salary > (SELECT avg(salary) FROM employee)
 ```
+To podzapytanie musi zwrócić pojedyńczy wiersz w jednej kolumnie.
+
+Podzapytanie użyte razem z **IN** może zwrócić więcej wyników ale w jednej kolumnie:
+
 ```sql
 SELECT surname, salary
 FROM employee
--- podzapytanie może zwrócić więcej wyników,
--- ale ciągle musi być to jedna kolumna
 WHERE name IN (SELECT name FROM managers) 
 ```
 ---
 
-Możemy również użyć podzapytania, żeby utworzyć kolumnę.
+Możemy również użyć podzapytania, żeby utworzyć kolumnę. To podzapytanie również może zwrócić tyko
+jedną kolumnę:
 
 ```sql
--- podzapytanie tworzące kolumn avg_salry musi zwrócić jeden wynik
--- w jednej kolumnie
 SELECT surname, salary, (SELECT avg(salary) FROM employee) AS avg_salary
 FROM employee
 ```
@@ -658,6 +672,8 @@ Relacja między jedną encją, a druga. W bazie relacyjnej oznacza, że jedna ta
 
 ![one-to-one](/images/one-to-one.png)
 
+![one-to-one](/images/one-to-one-table.png)
+
 ---
 
 ##### Jeden do wielu
@@ -665,6 +681,8 @@ Relacja między jedną encją, a druga. W bazie relacyjnej oznacza, że jedna ta
 Relacja między jedną encją, a wieloma. W bazie relacyjnej modelowana identycznie jak relacja jeden do jeden.
 
 ![one-to-many](/images/one-to-many.png)
+
+![one-to-one](/images/one-to-many-table.png)
 
 ---
 
@@ -674,7 +692,12 @@ Relacja między wieloma encjami, a wieloma. W bazie relacyjnej modelowana za pom
 
 ![many-to-many](/images/many-to-many.png)
 
-Tabele *wiele-do-wielu* często posiadają **złożone klucze główne**.
+![one-to-one](/images/many-to-many-table.png)
+
+---
+
+Tabele *wiele-do-wielu* często posiadają **złożone klucze główne**, to znaczy klucze główne, które
+mają więcej niż jedną kolumnę.
 
 ---
 
@@ -718,7 +741,7 @@ WITH RECURSIVE days AS (
 ```
 ---
 
-### SQL Window functions
+### SQL Window Functions
 
 ---
 
@@ -889,14 +912,14 @@ CREATE TABLE [nazwa] ([definicje kolumn] [definicje kluczy])
 
 ```sql
 CREATE TABLE employee (
-  EMPNO SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  ENAME VARCHAR(40) NOT NULL,
-  JOB VARCHAR(20) NOT NULL,
-  HIREDATE date,
-  SAL DECIMAL(7,2),
-  DEPTNO SMALLINT(5) UNSIGNED,
-  PRIMARY KEY (EMPNO),
-  FOREIGN KEY(DEPTNO) REFERENCES department (DEPTNO)
+  id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(40) NOT NULL,
+  job VARCHAR(20) NOT NULL,
+  birthdate DATE,
+  salry DECIMAL(7,2),
+  dept_id SMALLINT UNSIGNED,
+  PRIMARY KEY (id),
+  FOREIGN KEY(dept_id) REFERENCES department (id)
 );
 ```
 ---
@@ -904,7 +927,7 @@ CREATE TABLE employee (
 Tabelę możemy usunąć przy pomocy `DROP`.
 
 ```sql
-DROP TABLE employee;
+DROP TABLE {IF EXISTS} employee;
 ```
 
 ---
@@ -935,11 +958,25 @@ ALTER TABLE department DROP COLUMN DESCR;
 
 #### Atrybuty kolumn
 
-* **NOT NULL** - kolumna nie może przyjmować wartości null
-* **UNIQUE** - kolumna będzie przechowywać tylko unikalne wartości
-* **AUTO_INCREMENT** - kolumna typu liczbowego, która wstawia w miejsce *NULL*
-                       liczby z sekwencji
+* **NULL / NOT NULL** - atrybut określa czy kolumna może czy nie może przyjmować wartości **null**
+* **UNIQUE** - atrybut określa, że kolumna może przechowywać tylko unikalne wartości
+* **AUTO_INCREMENT** - atrybut powoduje, że jeżeli kolumna nie zostanie ustawiona
+  podczas tworzenia to zostanie zastąpione wartością z sekwencji. Może być używane tylko
+  na kolumna które są kluczami głównymi.
 * **CHECK** - kolumna będzie przyjmować tylko wartości spełniające predykat
+* **DEFAULT** - pozwala wybrać wartość domyślną dla kolumny
+---
+
+```sql
+CREATE TABLE message (
+  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  priority INT CHECK (priority IN (1,2,3)),
+  content VARCHAR(100) DEFAULT '',
+  message_number INT UNIQUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+```
 
 ---
 
@@ -953,7 +990,7 @@ CREATE TABLE employee (
 );
 ```
 
-Możemy też zdefiniować je jako ostatnie wyrażenie przy tworzeniu tabeli:
+Możemy też zdefiniować je jako ostatnie instrukcje przy tworzeniu tabeli:
 
 ```sql
 CREATE TABLE employee (
@@ -979,6 +1016,27 @@ CREATE TABLE employee_x_departments (
 
 ---
 
+Domyślnie baza danych nie pozwoli nam usunąć wierszy, których jakiekolwiek pole jest ustawione w kolumnach oznaczonych
+jako klucz obcy w innych tabelach. Możemy zmienić domyślne zachowanie podczas tworzenia klucza:
+
+```sql
+CREATE TABLE rooms (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    building_id INT NOT NULL,
+    FOREIGN KEY (building_id)
+        REFERENCES buildings (id)
+        ON DELETE CASCADE
+);
+```
+
+Najpopularniesze opcje to:
+
+* **ON DELETE CASCADE** - usuwa wszystkie powiązane rekordy
+* **ON DELETE SET NULL** - ustawia klucz obcy na **null** w powiązanych rekordach
+* **ON DELETE RESTRICT** - domyślna opcja, która powoduje błąð podczas próby usunięcia wiersza z powiazaniami
+
+---
+
 #### Widoki
 
 **Widok** (zwany również wirtualną tabelą, ang. *view*) składa się ze zbioru wierszy
@@ -988,12 +1046,13 @@ zwracanych w wyniku wykonania określonego zapytania SQL. Widok **nie stanowi ko
 * Umożliwiają ograniczenia dostępu do kolumn (np. ukrywanie wysokości pensji)
 
 **Widok zmaterializowany ** (ang. *materialized view*) **tworzy kopię danych** z zapytania wykorzystanego do jego stworzenia.
-Przy każdej zmianie tabeli źródłowych widok jest uaktualniany.
+Przy każdej zmianie tabeli źródłowych widok jest uaktualniany. Ten typ widoku nie jest obsługiwany przez *MySQL*.
 
 ---
-Widok tworzymy zapytaniem:
+Widoki tworzymy instrukcją:
+
 ```sql
-CREATE VIEW OR REPLACE [nazwa_widoku] ([kolumny])
+CREATE VIEW [nazwa_widoku] ([kolumny])
 AS SELECT [zapytanie];
 ```
 
@@ -1004,57 +1063,22 @@ SELECT [kolumny] FROM [widok];
 
 Aby usunąć widok, używamy `DROP`:
 ```sql
-DROP VIEW [widok];
-```
----
-
-##### Wyzwalacze
-**Wyzwalacz** (ang. *trigger*) to procedura, która jest wykonywana w odpowiedzi na zajście w bazie danych określonych zdarzeń, takich jak:
-
-* wstawianie danych (**INSERT**)
-* modyfikowanie danych (**UPDATE**)
-* usuwanie danych z tabel (**DELETE**)
-
-Zdarzenia te mogą być wykonywane bezpośrednio przed operacją lub tuż po niej.
-
----
-
-##### Wyzwalacze możemy stosować do:
-
-* weryfikacji danych przed zapisem w bazie
-* automatyzacja operacji (jak wstawienie daty ostatniej modyfikacji)
-
----
-Wyzwalacz dodajemy używając `CREATE TRIGGER`:
-```sql
-CREATE TRIGGER [nazwa_wyzwalacza]
-{ BEFORE | AFTER }
-{ INSERT | UPDATE | DELETE }
-ON [nazwa_tabeli]
-FOR EACH ROW
-[instrukcja/instrukcje_do_wykonania]
-```
-Jeśli wyzwalacz wykonuje więcej niż jedną instrukcje umieszcza się te instrukcje pomiędzy słowami kluczowym **BEGIN** i **END**.
-
-```sql
-CREATE TRIGGER set_grade BEFORE UPDATE ON marks
-    FOR EACH ROW
-BEGIN
-    IF new.points >= 90 THEN
-        SET new.grade = 'EXCELLENT';
-    ELSEIF new.points >= 45 AND new.pooints < 90 THEN
-        SET new.gtrade = 'OK';
-    ELSE
-        SET new.grade = 'UNSATISFACTORY';
-    END IF;
-END;
+DROP VIEW {IF EXISTS} [widok];
 ```
 
 ---
 
-Możemy też usunąć istniejący wyzwalacz:
 ```sql
-DROP TRIGGER [nazwa_wyzwalacza];
+CREATE VIEW active_customers AS (
+    SELECT name, phone, address
+    FROM customers
+    JOIN customers.status_id = statuses.id
+    WHERE status.name = 'ACTIVE'
+);
+```
+
+```sql
+SELECT * FROM active_customer WHERE phone LIKE '505%';
 ```
 ---
 
@@ -1087,7 +1111,7 @@ Indeksy to dodatkowe struktury dazy danych definiowane dla konkretnych kolumn.
 ###### Tworzenie indeksów
 
 ```sql
-CREATE {UNIQUE|FULLTEXT} INDEX [nazwa_indeksu] ON [kolumn] {USING BTREE};
+CREATE INDEX [nazwa_indeksu] ON [kolumn] {USING BTREE};
 ```
 
 ```sql
@@ -1097,57 +1121,229 @@ CREATE UNIQUE INDEX newautid ON newauthor(aut_id) USING BTREE;
 ```
 
 ```sql
-DROP INDEX [nazwa_indeksu] ON [nazwa_tabeli];
+DROP INDEX {IF EXISTS} [nazwa_indeksu] ON [nazwa_tabeli];
 ```
 
 Note: SELECT SQL_NO_CACHE * FROM students WHERE first_name LIKE '%yna';
 ---
 
-##### Procedury
+*MySQL* obsługuje także indeksy typu **FULLTEXT**, które pozwalają na pełnotekstowe przeszukiwanie tekstu: 
 
 ```sql
-CREATE PROCEDURE [nazwa_procedury] ([parametr[, ...]])
-[kod procedury]
+CREATE FULLTEXT INDEX books_fulltext ON table_name(title,description);
 ```
 
 ```sql
-DROP PROCEDURE [nazwa_procedury];
+SELECT 
+   id,
+   MATCH(description) AGAINST ('secret' IN NATURAL LANGUAGE MODE) AS score
+FROM books;
 ```
 
-```sql
-CREATE PROCEDURE get_data(IN product_number CHAR(8), OUT count INT)
-SELECT COUNT(*) FROM products WHERE product = product_number INTO count;
-```
-
-```sql
-CALL get_data();
-SELECT @count;
-```
+---
+### Procedury i funkcje
 
 ---
 
 ### Funkcje
+
+Funkcja w SQL może przyjmować parametry wyjściowe, ale zawsze musi zwrócić wynik.
 
 ```sql
 CREATE FUNCTION [nazwa_funkcji] ([parametr[, ...]]) RETURNS [typ] [cechy, ...]
 [kod_funkcji]
 ```
 
----
-
-Jeżeli funkcja zwraca zawsze ten sam wynik dla tych samych parametrów, to 
-możemy ją oznaczyć jako deterministyczną za pomocą atrybutu **DETERMINISTIC**.
+Typ zwracanego wyniku deklarujemy w sygnaturze metody za pomocą **RETURNS**.
+Następnie możemy podać cechy funkcji.
+Wynik wracający z funkcji oznaczamy za pomocą **RETURN**: 
 
 ```sql
+CREATE FUNCTION no_of_years(ago date) RETURNS int DETERMINISTIC
+    RETURN year(current_date)-year(ago);
+END
+```
 
+---
+
+#### Cechy fukcji
+
+* **DETERMINISTIC&nbsp;/&nbsp;NOT&nbsp;DETERMINISTIC** - jeżeli funkcja zwraca zawsze ten sam wynik dla tych samych parametrów, to 
+możemy ją oznaczyć jako deterministyczną za pomocą atrybutu **DETERMINISTIC**. Jeżeli wynik może być inny
+(bo fukcja korzysta z fukcji zwracających obecny czas, lub losowe wartości) to należy je oznaczyć jako **NOT&nbsp;DETERMINISTIC**.
+
+* **NO SQL** / **CONTAINS SQL** / **READS SQL DATA** / **MODIFIES SQL DATA** -  tymi atrybutami możemy
+oznaczyć czy funkcja nie zawiera w ogóle zapytań(*NO SQL*), posiada zapytania nie czytające danych z tabel (*CONTAINS SQL*),
+wczytuje dane z tabel, ale ich nie modyfikuje(*READS SQL DATA*), albo modyfikuje je (*MODIFIES SQL DATA*).
+
+---
+
+Jeżeli ciało funkcji lub procedury ma więcej niż jedną instrukcję to musi być umieszczone pomiędzy
+słowami kluczowymi **BEGIN** i **END**, które pełnią tym samym fukcję podobną do klamer otwierających 
+i zamykających. 
+
+Aby możliwe było używanie średnika w środku blogu **BEGIN&nbsp;..&nbsp;END** musimy też zdefiniować tymczasowo 
+inny ogranicznik, który musi zostać użyty do oznaczenia końca ciała funkcji. Do tego celu używane
+jest polecenie **DELIMETER**: 
+
+```sql
+DELIMITER $$
+
+CREATE FUNCTION fullname(fname VARCHAR(250),lname VARCHAR(250)) 
+RETURNS CHAR(250) DETERMINISTIC
+BEGIN
+    DECLARE result CHAR(500);
+    SET result := CONCAT(fname,' ',lname);
+    RETURN result;
+END$$ 
+
+DELIMITER ;
+```
+---
+
+#### Zmienne
+
+Zmienne możemy deklarować za pomocą *DECLARE* ustawiać za pomocą *SET*:
+
+```sql
+DECLARE result CHAR(500);
+SET result := CONCAT('Mr. ', fname, ' ', lname);
+```
+
+Za pomocą konstrukcji **SELECT&nbsp;..&nbsp;INTO {zmienna}** możemy umieszczać wynik zapytań
+w zmiennych:
+
+```sql
+DECLARE count INT;
+SELECT COUNT(1) INTO count FROM students WHERE active = 1;
+```
+
+---
+
+Poprzedając przypisanie zmiennej znakiem **@** powodujemy stworzenie zmiennej o zasięgu całej
+sesji użytkownika. Powoduje to, że zmienna ustawiona w jednej funkcji/procedurze może zostać użyta
+w drugiej.
+
+```sql
+SET @name = 'John Armstrong'; 
+```
+
+Istnieją też predefiniowane zmienne systeme, które poprzedza się podwójmym znakiem **@**:
+
+```sql
+SET @@global.sort_buffer_size=1000000;
+```
+
+---
+
+W kodzie prcedur i funkcji możem korzystać również z wyrażeń warunkowych **IF..ELSEIF..ELSE**:
+
+```sql
+IF {warunek} THEN
+...
+ELSE IF {warunek} THEN
+...
+ELSE
+...
+END IF;
+```
+
+```sql
+IF points >= 90 THEN
+    SET grade = 5;
+ELSEIF points >= 45 THEN
+    SET gtrade = 4;
+ELSE
+    SET grade = 3;
+END IF;
+```
+
+---
+
+### Procedury
+
+```sql
+CREATE PROCEDURE [nazwa_procedury] ([parametr[, ...]])
+[kod procedury]
+```
+
+Procedury nie zwracają w bezpośredni sposób wyniku swojego działania (w odróżnieniu od funkcji).
+Wynik z procedury może zwrócić za pomocą parametrów oznaczonych jako jako **OUT**. Parametry oznaczone
+jako **IN** działają w ten sam sposób jak parametry funkcji. 
+
+```sql
+CREATE PROCEDURE get_data(IN product_number CHAR(8), OUT count INT)
+SELECT COUNT(*) FROM products WHERE product = product_number INTO count;
+```
+
+---
+
+Funcję wywołuje się za pomocą słowa kluczowego *CALL*:
+
+```sql
+CALL get_data('100', @count);
+SELECT @count;
+```
+
+Funkcje i prodedury mozemy też usunąć z bazy danych za pomocą *DROP FUNCTION/PROCEDURE*:
+
+```sql
+DROP FUNCTION {IF EXISTS} [nazwa_funkcji];
+```
+
+```sql
+DROP PROCEDURE {IF EXISTS} [nazwa_procedury];
+```
+
+---
+
+##### Wyzwalacze
+**Wyzwalacz** (ang. *trigger*) to procedura, która jest wykonywana w odpowiedzi na zajście w bazie danych określonych zdarzeń, takich jak:
+
+* wstawianie danych (**INSERT**)
+* modyfikowanie danych (**UPDATE**)
+* usuwanie danych z tabel (**DELETE**)
+
+Zdarzenia te mogą być wykonywane bezpośrednio przed operacją lub tuż po niej.
+
+---
+
+##### Wyzwalacze możemy stosować do:
+
+* weryfikacji danych przed zapisem w bazie
+* automatyzacja operacji (jak wstawienie daty ostatniej modyfikacji)
+
+---
+Wyzwalacz dodajemy używając `CREATE TRIGGER`:
+```sql
+CREATE TRIGGER [nazwa_wyzwalacza]
+{ BEFORE | AFTER }
+{ INSERT | UPDATE | DELETE }
+ON [nazwa_tabeli]
+FOR EACH ROW
+[instrukcja/instrukcje_do_wykonania]
+```
+
+Możemy też usunąć istniejący wyzwalacz:
+```sql
+DROP TRIGGER {IF EXISTS} [nazwa_wyzwalacza];
 ```
 
 ---
 
 ```sql
-DROP FUNCTION [nazwa_funkcji];
+CREATE TRIGGER set_grade BEFORE UPDATE ON marks
+    FOR EACH ROW
+BEGIN
+    IF new.points >= 90 THEN
+        SET new.grade = 'EXCELLENT';
+    ELSEIF new.points >= 45 THEN
+        SET new.gtrade = 'OK';
+    ELSE
+        SET new.grade = 'UNSATISFACTORY';
+    END IF;
+END;
 ```
-
 ---
 
 ## Data control language
@@ -1165,7 +1361,7 @@ CREATE USER 'user'@'192.168.1.204' IDENTIFIED BY 'pass';
 Usuwanie użytkownika:
 
 ```sql
-DROP USER użytkownik;
+DROP USER {IF EXISTS} użytkownik;
 ```
 ---
 
@@ -1203,6 +1399,7 @@ REVOKE INSERT ON employees.dept FROM john;
 * **DROP** - usuwanie baz danych i tabel
 * **ALTER** - zmiana struktury tabel
 * **GRANT** - przyznawanie uprawnień
+* **SUPER** - uprawnienia administratora
 * **ALL PRIVILEGES** – wszystko powyższe
 
 ---
@@ -1252,6 +1449,33 @@ Poprawna transakcja jest **zatwierdzana** w bazie danych (ang.&nbsp;*committed*)
 a wprowadzone przez nią zmiany są widoczne dla innych procesów bazy danych.
 Niepoprawna transakcja natomiast jest wycofywana (ang. *rolled-back*),
 a wszystkie wprowadzone przez nią zmiany są anulowane.
+
+---
+
+Transakcję rozpoczynamy wyrażeniem **START TRANSACTION**, a zatwierdzamy **COMMIT**:
+
+```sql
+START TRANSACTION;
+
+INSERT INTO users VALUES('Adam', 'Smith');
+INSERT INTO users VALUES('Adam', 'Johnson');
+
+COMMIT;
+```
+
+Możemy też odwołać transakcję uzywająć **ROLLBACK**:
+
+```sql
+START TRANSACTION;
+
+UPDATE users SET name = 'John' WHERE last_name = 'Smith';
+UPDATE users SET name = 'George' WHERE last_name = 'Johnson';
+
+ROLLBACK;
+```
+---
+
+# ACID
 
 ---
 
